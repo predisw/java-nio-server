@@ -43,12 +43,15 @@ public class HttpMessageReader implements IMessageReader {
         this.nextMessage.writeToMessage(byteBuffer);
 
         int endIndex = HttpUtil.parseHttpRequest(this.nextMessage.sharedArray, this.nextMessage.offset, this.nextMessage.offset + this.nextMessage.length, (HttpHeaders) this.nextMessage.metaData);
+        // != -1 mean the sharedArray already store the complete message
         if(endIndex != -1){
             Message message = this.messageBuffer.getMessage();
             message.metaData = new HttpHeaders();
 
+            // write the complete message from nextMessage to this message
             message.writePartialMessageToMessage(nextMessage, endIndex);
 
+            // this message become the nextMessage and the previous nextMessage add to completeMessage to process
             completeMessages.add(nextMessage);
             nextMessage = message;
         }

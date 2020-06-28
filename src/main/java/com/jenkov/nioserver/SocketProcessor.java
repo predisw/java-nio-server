@@ -79,6 +79,8 @@ public class SocketProcessor implements Runnable {
     public void takeNewSockets() throws IOException {
         Socket newSocket = this.inboundSocketQueue.poll();
 
+        // init the sockets of the socketQueue
+        // register the socket to selector for read ready.
         while(newSocket != null){
             newSocket.socketId = this.nextSocketId++;
             newSocket.socketChannel.configureBlocking(false);
@@ -118,6 +120,9 @@ public class SocketProcessor implements Runnable {
 
     private void readFromSocket(SelectionKey key) throws IOException {
         Socket socket = (Socket) key.attachment();
+        // this.readByteBuffer will be clear when this read finish.
+        // read the message from the socketChannel into this socket's messageReader
+        // the readByteBuffer is a temporary buffer to store the message
         socket.messageReader.read(socket, this.readByteBuffer);
 
         List<Message> fullMessages = socket.messageReader.getMessages();
@@ -128,7 +133,7 @@ public class SocketProcessor implements Runnable {
             }
             fullMessages.clear();
         }
-
+        // -1
         if(socket.endOfStreamReached){
             System.out.println("Socket closed: " + socket.socketId);
             this.socketMap.remove(socket.socketId);
@@ -165,6 +170,7 @@ public class SocketProcessor implements Runnable {
                 socket.messageWriter.write(socket, this.writeByteBuffer);
 
                 if(socket.messageWriter.isEmpty()){
+                    // will be cancelled if add to this Q
                     this.nonEmptyToEmptySockets.add(socket);
                 }
 
@@ -193,6 +199,7 @@ public class SocketProcessor implements Runnable {
     }
 
     private void takeNewOutboundMessages() {
+        // put the response into outboundMessageQueue via writerProxy
         Message outMessage = this.outboundMessageQueue.poll();
         while(outMessage != null){
             Socket socket = this.socketMap.get(outMessage.socketId);

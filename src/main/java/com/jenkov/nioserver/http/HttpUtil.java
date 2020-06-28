@@ -26,7 +26,7 @@ public class HttpUtil {
         */
 
         //parse HTTP request line
-        int endOfFirstLine = findNextLineBreak(src, startIndex, endIndex);
+        int endOfFirstLine = findNextLineBreak(src, startIndex, endIndex);  // find the index of '\n'
         if(endOfFirstLine == -1) return -1;
 
 

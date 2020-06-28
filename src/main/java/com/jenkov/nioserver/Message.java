@@ -11,6 +11,11 @@ public class Message {
 
     public long socketId = 0; // the id of source socket or destination socket, depending on whether is going in or out.
 
+    // Messages shared this array with the same MessageBuffer's ( init in the method MessageBuffer.getMessage() )
+    // Each message occupy one section
+    // why does design to share one array ?
+    // 1. just need to create one array to store messages for multi socket ?
+    // 2. just need to move the shared array to larger array when expand the message capacity ?
     public byte[] sharedArray = null;
     public int    offset      = 0; //offset into sharedArray where this message data starts.
     public int    capacity    = 0; //the size of the section in the sharedArray allocated to this message.
@@ -18,6 +23,7 @@ public class Message {
 
     public Object metaData    = null;
 
+    // instantiate by MessageBuffer.getMessage()
     public Message(MessageBuffer messageBuffer) {
         this.messageBuffer = messageBuffer;
     }
@@ -91,6 +97,7 @@ public class Message {
      */
     public void writePartialMessageToMessage(Message message, int endIndex){
         int startIndexOfPartialMessage = message.offset + endIndex;
+        // normally the length is same with endIndex, in case ... (refer to the comments of this method)
         int lengthOfPartialMessage     = (message.offset + message.length) - endIndex;
 
         System.arraycopy(message.sharedArray, startIndexOfPartialMessage, this.sharedArray, this.offset, lengthOfPartialMessage);

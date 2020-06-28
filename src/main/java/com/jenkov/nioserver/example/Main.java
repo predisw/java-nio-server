@@ -25,6 +25,7 @@ public class Main {
         IMessageProcessor messageProcessor = (request, writeProxy) -> {
             System.out.println("Message Received from socket: " + request.socketId);
 
+            // create one new message to respond
             Message response = writeProxy.getMessage();
             response.socketId = request.socketId;
             response.writeToMessage(httpResponseBytes);

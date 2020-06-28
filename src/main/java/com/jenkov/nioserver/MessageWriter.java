@@ -32,8 +32,11 @@ public class MessageWriter {
         this.bytesWritten += socket.write(byteBuffer);
         byteBuffer.clear();
 
+        // wait for next writen ready time to send if haven't sent complete message
         if(bytesWritten >= this.messageInProgress.length){
             if(this.writeQueue.size() > 0){
+                // it seems one time only sent one message
+                // here just mark to wait for next time to send this removed message
                 this.messageInProgress = this.writeQueue.remove(0);
             } else {
                 this.messageInProgress = null;

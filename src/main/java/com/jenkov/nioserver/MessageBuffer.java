@@ -32,6 +32,7 @@ public class MessageBuffer {
     public MessageBuffer() {
         //add all free sections to all free section queues.
         for(int i=0; i<smallMessageBuffer.length; i+= CAPACITY_SMALL){
+            // each section has size 4* KB
             this.smallMessageBufferFreeBlocks.put(i);
         }
         for(int i=0; i<mediumMessageBuffer.length; i+= CAPACITY_MEDIUM){
@@ -42,16 +43,19 @@ public class MessageBuffer {
         }
     }
 
+    /**
+     * create one new Message with shared array
+     * @return
+     */
     public Message getMessage() {
         int nextFreeSmallBlock = this.smallMessageBufferFreeBlocks.take();
 
         if(nextFreeSmallBlock == -1) return null;
 
         Message message = new Message(this);       //todo get from Message pool - caps memory usage.
-
-        message.sharedArray = this.smallMessageBuffer;
+        message.sharedArray = this.smallMessageBuffer;  // share the same messageBuffer with different message instance
         message.capacity    = CAPACITY_SMALL;
-        message.offset      = nextFreeSmallBlock;
+        message.offset      = nextFreeSmallBlock;  // 0, when get the first message, the 2th start index is CAPACITY_SMALL
         message.length      = 0;
 
         return message;
@@ -68,11 +72,13 @@ public class MessageBuffer {
     }
 
     private boolean moveMessage(Message message, QueueIntFlip srcBlockQueue, QueueIntFlip destBlockQueue, byte[] dest, int newCapacity) {
+        //TODO: why use the queue to store the index ?
         int nextFreeBlock = destBlockQueue.take();
         if(nextFreeBlock == -1) return false;
 
         System.arraycopy(message.sharedArray, message.offset, dest, nextFreeBlock, message.length);
-
+        // The space can be used when the array index is available in queue
+        // Because it must take the started index first from the queue before using that section of the array
         srcBlockQueue.put(message.offset); //free smaller block after copy
 
         message.sharedArray = dest;

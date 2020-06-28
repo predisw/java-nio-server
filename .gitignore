@@ -1,0 +1,79 @@
+# === Java ===
+*.class
+generated/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# === Python ===
+# Compiled python modules.
+*.pyc
+
+# Setuptools distribution folder.
+dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+*.egg-info
+build/
+
+# === Maven ===
+target/
+
+# === Eclipse ===
+*.pydevproject
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+# === IntelliJ ===
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# === Linux === 
+.*
+!.gitignore
+*~
+
+# KDE
+.directory
+
+# === Windows ===
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+*/bin/*
+
+# others
+*.xlsx
+bak/
+
+

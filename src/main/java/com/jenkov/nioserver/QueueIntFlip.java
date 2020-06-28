@@ -14,8 +14,8 @@ public class QueueIntFlip {
     public int[] elements = null;
 
     public int capacity = 0;
-    public int writePos = 0;
-    public int readPos  = 0;
+    public int writePos = 0;  // the position which how many elements had put
+    public int readPos  = 0;  // the position which how many elements had read
     public boolean flipped = false;
 
     public QueueIntFlip(int capacity) {
@@ -45,11 +45,11 @@ public class QueueIntFlip {
 
     public boolean put(int element){
         if(!flipped){
-            if(writePos == capacity){
+            if(writePos == capacity){  // means the 'overflowed' element was put
                 writePos = 0;
                 flipped = true;
 
-                if(writePos < readPos){
+                if(writePos < readPos){ // the already read position can be released.
                     elements[writePos++] = element;
                     return true;
                 } else {
